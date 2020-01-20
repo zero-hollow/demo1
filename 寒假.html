@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11" type="text/javascript"></script>
+    <script type="text/javascript">
+   </script>
+ <link href="./sass/sass.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <template id="treeviewitem">
+        <div>
+            <div v-on:click="expand" v-bind:class="[self.expand?'cut':'add']" v-if="isLeaf"></div>
+            <div v-on:click="checkbox" v-model="self.selected" v-bind:class="[self.selected?'check2':'check1']"></div>
+            <span class="write">{{ self.name }}</span>
+            <div v-if="self.expand" v-for="item in items">
+             <treeviewitem v-bind:items="item.items" v-bind:self="item" style="left:-10px"></treeviewitem>
+        </div>
+    </template>
+    <template id="treeview">
+        <div>
+            <div v-for="item in items"> 
+                <treeviewitem v-bind:items="item.items" v-bind:self="item"></treeviewitem>
+            </div>
+        </div>
+    </template>
+    <div id="app">
+        <treeview v-bind:items="items"></treeview>
+    </div>
+    <script type="text/javascript">
+        Vue.component('treeviewitem', {
+            props: ['items', 'self'],
+            template: '#treeviewitem',
+            methods: {
+                checkbox: function (e) {
+                    var checkChild; 
+                    checkChild = function (items, checked) {
+                        for (var i = 0; i < items.length; i++) {
+                        var item = items[i];
+                        item.selected = checked;
+                        if (item.items) {
+                            checkChild(item.items, checked)
+                          }
+                      }
+                    };
+                    if (e.target.click) {
+                         this.self.selected=!this.self.selected;
+                        checkChild(this.items,!this.items[0].selected);
+                    }
+                },
+                expand: function (e) {
+                    if (this.self.expand) {
+                        this.self.expand = false;
+                    } else {
+                        this.self.expand = true;
+                    }
+                }
+            },
+            computed: {
+                isLeaf: function () {
+                    if (this.items && this.items.length > 0) {
+                        return true;
+                    }
+                    return false;
+                }
+            }
+        });
+        Vue.component('treeview', {
+            props: ['items'],
+            template: '#treeview'
+        });
+        var demo= new Vue({
+            el: '#app',
+            data:{
+      items:[
+         {
+             name:'PaaS体验部1',
+             expand:true,
+             selected:false,
+             items:[
+                 {
+                 name:'PaaS体验部',
+                 expand:true,
+                 selected:false,
+                 items:[
+                     {
+                         name:'业务设计组',
+                         expand:true,
+                         selected:false,
+                     }
+                 ]
+               },
+               {
+                   name:'规范设计组',
+                   expand:true,
+                   selected:false,
+                   items:[
+                       {
+                           name:'业务设计组',
+                           expand:true,
+                           selected:false,
+                           items:[
+                               {
+                                   name:'业务设计解决',
+                                   expand:true,
+                                   selected:false,
+                                   items:[{
+                                       name:"业务",
+                                       expand:true,
+                                       selected:false,
+                                   }]
+                               }
+                           ]
+                       }
+                   ]
+               }
+             ]
+         },
+     ]
+    },
+        })
+
+    </script>
+</body>
+</html>
